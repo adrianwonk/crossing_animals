@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <stdbool.h>
-#include "math_func.h"
 
 int main(){
     printf("hello world!\n");
