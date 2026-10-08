@@ -7,7 +7,6 @@
  * as well as 2) tracking which students are at the pub.
  * Further functionalities can then be built which modify their states.*/
 
-
 #include <stdarg.h>
 #include <stddef.h>
 #include <stdio.h>
@@ -17,14 +16,15 @@
 #include "student_data_structures.h"
 
 // implied that there is already a pub allocated. Why? i dunno!
-void init_pub_values(pub *pub, size_t num_bartenders, student *bartenders[]){
+void init_pub_values(pub *pubptr, size_t num_bartenders, student *bartenders[]){
 
     customer *drunk_bucket, **bartender_refs;
 
     size_t hash(student *s, size_t load_size);
-    customer *insert_student(customer **mover, student *s);
+    customer *insert_student(customer *bucket_lane_ptr, student *s);
 
-    if ((drunk_bucket = calloc(pub->load, sizeof (customer))) == NULL){ /* initialise the drunk_bucket! */
+
+    if ((drunk_bucket = calloc(pubptr->load, sizeof (customer))) == NULL){ /* initialise the drunk_bucket! */
         fprintf(stderr, "critical memory initialisation error while making drunk_bucket!\n");
         exit(1);
     }
@@ -35,29 +35,36 @@ void init_pub_values(pub *pub, size_t num_bartenders, student *bartenders[]){
 
     int i; /* add the bartenders to drunk_bucket! */
     for (i=0; i<num_bartenders; i++) {
-        size_t bucket_lane = hash(bartenders[i], pub->load);
-        bartender_refs[i] = insert_student(&drunk_bucket, bartenders[i]);
+        size_t bucket_lane = hash(bartenders[i], pubptr->load);
+        bartender_refs[i] = insert_student(&drunk_bucket[bucket_lane], bartenders[i]);
     }
 
-    pub->num_bartenders = num_bartenders;
-    pub->bartenders     = bartender_refs;
-    pub->drunk_bucket   = drunk_bucket;
+    pubptr->num_bartenders = num_bartenders;
+    pubptr->bartenders     = bartender_refs;
+    pubptr->drunk_bucket   = drunk_bucket;
     /* default values */
-    pub->next           = NULL;
-    pub->num_ladies     = 0;
-    pub->num_men        = 0;
+    pubptr->next           = NULL;
+    pubptr->num_ladies     = 0;
+    pubptr->num_men        = 0;
 }
 
 inline size_t hash(student *s, size_t load_size){
-    return s->student_id % load_size;
+    return (s->student_id) % load_size;
 }
 
-customer *insert_student(customer **mover, student *s){
-    while (*mover) { /* navigate to nullptr */
-        mover = &(*mover)->next;
+customer *insert_student(customer *bucket_lane_ptr, student *s){
+    customer **mover = &bucket_lane_ptr;
+
+    if (bucket_lane_ptr->student_id || bucket_lane_ptr->student_name[0] || bucket_lane_ptr->next){
+        while (*mover) { /* navigate to nullptr */
+            mover = &(*mover)->next;
+        }
+        if ((*mover=calloc(1,sizeof(customer))) == NULL){
+            fprintf(stderr, "cannot allocate memory for pub customer records.\n");
+            exit(1);
+        }
     }
-    /* create a new customer entry */
-    *mover=calloc(1,sizeof(customer));
+
     strcpy((*mover)->student_name, s->student_name);
     (*mover)->student_id   = s->student_id;
     (*mover)->next         = NULL;
@@ -86,7 +93,7 @@ void print_pub(pub *pub){
         }
     }
 
-    printf("***bartenders ***************************\n");
+    printf("***bartenders *************************\n");
     for (i=0; mover=pub->bartenders[i], i<pub->num_bartenders; i++){
         printf("address: %p, name id next_adr: %s %zu %p\n",
             (void *) mover,
