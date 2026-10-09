@@ -18,44 +18,47 @@
 // implied that there is already a pub allocated. Why? i dunno!
 void init_pub_values(pub *pubptr, size_t num_bartenders, student *bartenders[]){
 
-    customer *drunk_bucket, **bartender_refs;
+    customer *drunk_bucket, **pbartenders_info;
+    size_t hash_st_id(long student_id, size_t load_size);
+    customer *add_to_drunk_bucket(customer *bucket_ptr, student *s);
 
-    size_t hash(student *s, size_t load_size);
-    customer *insert_student(customer *bucket_lane_ptr, student *s);
-
-
-    if ((drunk_bucket = calloc(pubptr->load, sizeof (customer))) == NULL){ /* initialise the drunk_bucket! */
+    if ((drunk_bucket=calloc( pubptr->load, sizeof (customer) )) == NULL){ /* initialise the drunk_bucket! */
         fprintf(stderr, "critical memory initialisation error while making drunk_bucket!\n");
         exit(1);
     }
-    if ((bartender_refs = calloc(num_bartenders, sizeof(customer*))) == NULL) {
+    if ((pbartenders_info=calloc( num_bartenders, sizeof (customer*) )) == NULL) { /* cache ptrs to bartenders in drunk_bucket! */
         fprintf(stderr, "critical memory initialisation error while making bartender_reference array!\n");
         exit(1);
     }
 
     int i; /* add the bartenders to drunk_bucket! */
     for (i=0; i<num_bartenders; i++) {
-        size_t bucket_lane = hash(bartenders[i], pubptr->load);
-        bartender_refs[i] = insert_student(&drunk_bucket[bucket_lane], bartenders[i]);
+        size_t bucket_num  = hash_st_id(bartenders[i]->student_id, pubptr->load);
+        customer *pb        = drunk_bucket + bucket_num;
+        student *pr         = bartenders[i];
+
+        pbartenders_info[i] = add_to_drunk_bucket(pb, pr);
     }
 
+    /* link created resources */
     pubptr->num_bartenders = num_bartenders;
-    pubptr->bartenders     = bartender_refs;
+    pubptr->bartenders     = pbartenders_info;
     pubptr->drunk_bucket   = drunk_bucket;
+
     /* default values */
     pubptr->next           = NULL;
     pubptr->num_ladies     = 0;
     pubptr->num_men        = 0;
 }
 
-inline size_t hash(student *s, size_t load_size){
-    return (s->student_id) % load_size;
+inline size_t hash_st_id(long student_id, size_t load_size){
+    return student_id % load_size;
 }
 
-customer *insert_student(customer *bucket_lane_ptr, student *s){
-    customer **mover = &bucket_lane_ptr;
+customer *add_to_drunk_bucket(customer *bucket_ptr, student *s){
+    customer **mover = &bucket_ptr;
 
-    if (bucket_lane_ptr->student_id || bucket_lane_ptr->student_name[0] || bucket_lane_ptr->next){
+    if (bucket_ptr->student_id || bucket_ptr->student_name[0] || bucket_ptr->next){
         while (*mover) { /* navigate to nullptr */
             mover = &(*mover)->next;
         }
