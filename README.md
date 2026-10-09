@@ -19,4 +19,4 @@ Hashing allows us to quantify anything into an index, with different calculation
 The hash of each student currently uses student_id, however depending on the require "key" of the system, we can move to hash names based on the first n letters of the name. This can be optimised by exploiting CPU pipelines to load calculate and store separate sums, however since names have a small constant size, this is not necessary.
 
 # Functionality: add_student_to_pub()
-Using pointers to 2 resources, student and a pub, the system **creates a customer record** on the pubs **drunk_bucket**; hashed by the students id. **Gender counters** of the pub is updated too.
+Using pointers to 2 resources, student and a pub, the system **creates a customer record** on the pubs **drunk_bucket**; hashed by the students id. **Gender counters** of the pub are updated too.
