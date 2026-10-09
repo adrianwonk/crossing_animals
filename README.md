@@ -8,3 +8,6 @@ Pointer to pointers are an important concept, as this second order concept allow
 
 # Game implementation:
 A hash bucket is used to store customer entries for a pub, allowing for random lookups of students based on their id. Pointer to pointers allow code to express the allocation of new memory for new customers *explicitly at the location where the pointer chain terminates (is NULL)*, improving **readability** and **logic accuracy**.
+
+# Tweakables:
+Based on what we *use* to lookup students at a pub, we can change out the hash function. For example, hash by first 4 letters of student name.
