@@ -1,11 +1,16 @@
-/* Main entity for our game, which is a PUB.
- * Students are able to stay at a pub, where
- * they can date, have conversations, and relax.
-*/ 
+/*************************************************/
+/* Main entity for our game, which is a PUB.     */
+/* Students are able to stay at a pub, where     */ 
+/* they can date, have conversations, and relax. */
+/*                                               */ 
+/*************************************************/ 
 
-/* The functions of a pub struct is to 1) know who the bartenders are,
- * as well as 2) tracking which students are at the pub.
- * Further functionalities can then be built which modify their states.*/
+/***********************************************************************/
+/* The functions of a pub struct is to 1) know who the bartenders are, */
+/* as well as 2) tracking which students are at the pub.               */
+/* Further functionalities can then be built which modify their states.*/
+/*                                                                     */
+/***********************************************************************/
 
 #include <stdarg.h>
 #include <stddef.h>
@@ -15,9 +20,11 @@
 #include "pub_data_structures.h"
 #include "student_data_structures.h"
 
-// implied that there is already a pub allocated. Why? i dunno!
+/* assumed that there is already a pub allocated, with load_size affixed. */
 void init_pub_values(pub *pubptr, size_t num_bartenders, student *bartenders[]){
 
+    if (!pubptr->load) { fprintf(stderr, "pub does not have a valid load size.\n"); exit(1); }
+    
     customer *drunk_bucket, **pbartenders_info;
     size_t hash_st_id(long student_id, size_t load_size);
     customer *add_to_drunk_bucket(customer *bucket_ptr, student *s);
@@ -74,20 +81,30 @@ customer *add_to_drunk_bucket(customer *bucket_ptr, student *s){
     return *mover;
 }
 
-void print_pub(pub *pub){
-    printf("===pub=================================\n");
-    printf("aggregates: %d ladies, %d men, %zu bartenders\n", pub->num_ladies, pub->num_men, pub->num_bartenders);
+void add_student_to_pub(student *ps, pub *pub){
+    customer *add_to_drunk_bucket(customer *bucket_ptr, student *s);
+    size_t hash_st_id(long student_id, size_t load_size);
+    size_t bucket_num = hash_st_id(ps->student_id, pub->load);
+    customer *bucket_ptr = pub->drunk_bucket + bucket_num;
+    add_to_drunk_bucket(bucket_ptr, ps);
+
+    (ps->my_gender == man) ? pub->num_men++: pub->num_ladies++;
+}
+
+void print_pub(FILE *fileptr, pub *pub){
+    fprintf(fileptr, "===pub=================================\n");
+    fprintf(fileptr, "aggregates: %d ladies, %d men, %zu bartenders\n", pub->num_ladies, pub->num_men, pub->num_bartenders);
 
     int i; /* prints out each bucket */
     customer *mover; 
     for (i=0; mover=pub->drunk_bucket+i, i<pub->load; i++){
 
-        printf("***bucket %-2d***************************\n", i);
+        fprintf(fileptr, "***bucket %-2d***************************\n", i);
 
         if (mover->student_name[0]=='\0' && !mover->student_id && !mover->next) continue;
 
         else while (mover){
-            printf("address: %p, name id next_adr: %s %zu %p\n",
+            fprintf(fileptr, "address: %p, name id next_adr: %s %zu %p\n",
                 (void *) mover,
                 mover->student_name,
                 mover->student_id,
@@ -96,13 +113,13 @@ void print_pub(pub *pub){
         }
     }
 
-    printf("***bartenders *************************\n");
+    fprintf(fileptr, "***bartenders *************************\n");
     for (i=0; mover=pub->bartenders[i], i<pub->num_bartenders; i++){
-        printf("address: %p, name id next_adr: %s %zu %p\n",
+        fprintf(fileptr, "address: %p, name id next_adr: %s %zu %p\n",
             (void *) mover,
             mover->student_name,
             mover->student_id,
             (void *)mover->next);
     }
-    printf("end\n");
+    fprintf(fileptr, "end\n");
 }

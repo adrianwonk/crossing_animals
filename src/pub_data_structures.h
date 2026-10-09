@@ -19,7 +19,7 @@ struct pub_node {
     size_t num_bartenders;
     customer **bartenders;
 
-    const size_t load;
+    size_t load;
     name pub_name;
     customer *drunk_bucket;
 

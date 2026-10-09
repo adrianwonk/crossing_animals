@@ -3,6 +3,8 @@ target_sources(${PROJECT_NAME}
     main.c
     math_func.c
     pub.c
+    test_pub.c
+    test_students.c
 )
 
 target_include_directories(${PROJECT_NAME}
