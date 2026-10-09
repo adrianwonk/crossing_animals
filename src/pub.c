@@ -121,5 +121,7 @@ void print_pub(FILE *fileptr, pub *pub){
             mover->student_id,
             (void *)mover->next);
     }
-    fprintf(fileptr, "end\n");
+    fprintf(fileptr,
+        "===end=====================\n"
+    );
 }

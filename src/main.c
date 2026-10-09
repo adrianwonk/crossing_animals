@@ -1,25 +1,37 @@
 #include <stdio.h>
 #include <stdbool.h>
-#include <stdlib.h>
 #include "pub_data_structures.h"
 #include "student_data_structures.h"
 
 int main() {
-    student *students, *test_students(FILE *fileptr);
-    pub *mypub, *test_pub(FILE *fileptr);
-    void add_student_to_pub(student *ps, pub *pub);
-    void print_pub(FILE *, pub*);
+    // after adding to the pub,
+    void print_student(FILE*, student*);
+    student *studs, *test_students(FILE*);
+    FILE *sink = fopen("/dev/null", "w");
+    printf( "After adding students to the pub, we want to "
+            "alter the states of each student every tick.\n"
+            "The state change is a function of the student, "
+            "as well as the pub.\n"
+            "More specifically, it depends on the male/female "
+            "ratios as well as the students' sexual preference.\n"
+            "formula: (student s1, pub) -> (student s2, pub)"
+            "\n");
 
-    mypub=test_pub(stderr);
-    students=test_students(stdout);
+    printf( "This terminal will print s2 details. Stderr will print "
+            "pub with s1, as well as s1 details."
+            "\n");
+    studs = test_students(sink);
 
     int i;
-    for (i=0; students[i].student_id; i++)
-        add_student_to_pub(students+i, mypub);
+    for(i=0;studs[i].student_id;i++){
+        print_student(stdout, studs+i);
+    }
 
-    print_pub(stdout, mypub);
+    fclose(sink);
+    
     return 0;
 }
+
 
 /*******************************************/
 /*  Going to the pub increases sex meter   */
