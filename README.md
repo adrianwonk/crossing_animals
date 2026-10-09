@@ -7,4 +7,4 @@ A pub has a drunk_bucket, which hashes student_id to the load_size defined for t
 Pointer to pointers are an important concept, as this second order concept allow functions to modify the resources which a pointer points to. Most evidently, this concept is useful when manipulating nodes in a linked list, as we allocate resources for the first pointer that points to NULL. As we directly modify the value of a pointer away from NULL/0, we must have a pointer to the pointer.
 
 # Game implementation:
-A hash bucket is used to store customer entries for a pub, allowing for random lookups of students based on their id. Pointer to pointers allow code to express the allocation of new memory for new customers, improving **readability** and **logic accuracy**.
+A hash bucket is used to store customer entries for a pub, allowing for random lookups of students based on their id. Pointer to pointers allow code to express the allocation of new memory for new customers *explicitly at the location where the pointer chain terminates (is NULL)*, improving **readability** and **logic accuracy**.
