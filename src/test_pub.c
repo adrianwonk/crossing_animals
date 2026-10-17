@@ -90,6 +90,5 @@ pub* test_pub(FILE *fileptr){
     void init_pub_values(pub *pub, size_t num_bartenders, student *bartenders[]), print_pub(FILE *fileptr, pub *pub);
 
     init_pub_values(my_pub, 7, tenders);
-    print_pub(fileptr, my_pub);
     return my_pub;
 }

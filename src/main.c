@@ -1,34 +1,59 @@
 #include <stdio.h>
 #include <stdbool.h>
+#include <stdlib.h>
 #include "pub_data_structures.h"
 #include "student_data_structures.h"
+#include "color_log.h"
 
 int main() {
-    // after adding to the pub,
-    void print_student(FILE*, student*);
+    color_table(stdout);
+
+    void print_student(FILE*, student*),
+         print_pub(FILE*, pub*);
     student *studs, *test_students(FILE*);
+    pub *my_pub, *test_pub(FILE*);
     FILE *sink = fopen("/dev/null", "w");
-    printf( "After adding students to the pub, we want to "
-            "alter the states of each student every tick.\n"
-            "The state change is a function of the student, "
-            "as well as the pub.\n"
-            "More specifically, it depends on the male/female "
-            "ratios as well as the students' sexual preference.\n"
-            "formula: (student s1, pub) -> (student s2, pub)"
-            "\n");
+    /* TODO */
+    // printf( "After adding students to the pub, we want to "
+    //         "alter the states of each student every tick.\n"
+    //         "The state change is a function of the student, "
+    //         "as well as the pub.\n"
+    //         "More specifically, it depends on the male/female "
+    //         "ratios as well as the students' sexual preference.\n"
+    //         "formula: (student s1, pub) -> (student s2, pub)"
+    //         "\n");
 
-    printf( "This terminal will print s2 details. Stderr will print "
-            "pub with s1, as well as s1 details."
-            "\n");
+    // printf( "This terminal will print s2 details. Stderr will print "
+    //         "pub with s1, as well as s1 details."
+    //         "\n");
+
     studs = test_students(sink);
+    my_pub = test_pub(sink);
+    print_pub(stdout,my_pub);
+    exit(0);
 
+    void add_student_to_pub(student *ps, pub *pub);
+    /* students to be added to the pub */
+    printf("=== Students prior to be added to my_pub: ===\n");
     int i;
     for(i=0;studs[i].student_id;i++){
         print_student(stdout, studs+i);
+        add_student_to_pub(studs+i, my_pub);
+    }
+    
+    printf("=== my_pub prior to state change: ===\n");
+    print_pub(stdout, my_pub);
+
+    // state_change();
+
+    fprintf(stderr,"=== my_pub after state change: ===\n");
+    print_pub(stderr, my_pub);
+    fprintf(stderr,"=== Students after state change: ===\n");
+    for(i=0;studs[i].student_id;i++){
+        print_student(stderr, studs+i);
     }
 
     fclose(sink);
-    
     return 0;
 }
 

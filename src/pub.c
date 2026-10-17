@@ -19,6 +19,7 @@
 #include <string.h>
 #include "pub_data_structures.h"
 #include "student_data_structures.h"
+#include "color_log.h"
 
 /* assumed that there is already a pub allocated, with load_size affixed. */
 void init_pub_values(pub *pubptr, size_t num_bartenders, student *bartenders[]){
@@ -92,36 +93,51 @@ void add_student_to_pub(student *ps, pub *pub){
 }
 
 void print_pub(FILE *fileptr, pub *pub){
-    fprintf(fileptr, "===pub=================================\n");
-    fprintf(fileptr, "aggregates: %d ladies, %d men, %zu bartenders\n", pub->num_ladies, pub->num_men, pub->num_bartenders);
+    fprint_col(fileptr, HEADER, "pub");
+    fprint_col(fileptr, DEFAULT, "aggregates: ");
+    fprint_col(fileptr, NUMBER, "%d ", pub->num_ladies);
+    fprint_col(fileptr, LABEL, "ladies, ");
+    fprint_col(fileptr, NUMBER, "%d ", pub->num_men);
+    fprint_col(fileptr, LABEL, "men and ");
+    fprint_col(fileptr, NUMBER, "%d ", pub->num_bartenders);
+    fprint_col(fileptr, LABEL, "bartenders\n");
 
     int i; /* prints out each bucket */
     customer *mover; 
     for (i=0; mover=pub->drunk_bucket+i, i<pub->load; i++){
 
-        fprintf(fileptr, "***bucket %-2d***************************\n", i);
+        fprint_col(fileptr, SECTION, "bucket %-2d", i);
 
         if (mover->student_name[0]=='\0' && !mover->student_id && !mover->next) continue;
 
-        else while (mover){
-            fprintf(fileptr, "address: %p, name id next_adr: %s %zu %p\n",
-                (void *) mover,
-                mover->student_name,
-                mover->student_id,
-                (void *)mover->next);
-            mover = mover->next;
+        else for (; mover; mover=mover->next){
+            fprint_col(fileptr, LABEL, "address: ");
+            fprint_col(fileptr, MEMORY, "%p",
+                    (void*) mover);
+            fprint_col(fileptr, LABEL, ", name id next_adr: ");
+            fprint_col(fileptr, STRING, "%s ",
+                    mover->student_name);
+            fprint_col(fileptr, NUMBER, "%zu ", 
+                    mover->student_id);
+            fprint_col(fileptr, MEMORY, "%p\n", 
+                    (void *)mover->next);
         }
     }
 
-    fprintf(fileptr, "***bartenders *************************\n");
+    fprint_col(fileptr, SECTION, "bartenders");
     for (i=0; mover=pub->bartenders[i], i<pub->num_bartenders; i++){
-        fprintf(fileptr, "address: %p, name id next_adr: %s %zu %p\n",
-            (void *) mover,
-            mover->student_name,
-            mover->student_id,
+        fprint_col(fileptr, LABEL, "address: ");
+        fprint_col(fileptr, MEMORY, "%p",
+            (void *) mover);
+        fprint_col(fileptr, LABEL, ", name id next_adr: ");
+        fprint_col(fileptr, STRING, "%s ",
+            mover->student_name);
+        fprint_col(fileptr, NUMBER, "%zu ",
+            mover->student_id);
+        fprint_col(fileptr, MEMORY, "%p\n",
             (void *)mover->next);
     }
-    fprintf(fileptr,
-        "===end=====================\n"
+    fprint_col(fileptr,TRAILER,
+        "end pub"
     );
 }
