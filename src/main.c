@@ -7,6 +7,8 @@
 
 int main() {
     void test_put_students_in_pub(FILE *before, FILE *after, student **students, pub **mypub);
+    void test();
+    test();
 
     void print_student(FILE*, student*),
          print_pub(FILE*, pub*);

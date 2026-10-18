@@ -7,7 +7,6 @@ typedef struct pub_node pub;
 typedef struct customer_record_node customer;
 
 struct customer_record_node {
-    name student_name;
     uint64_t student_id;
     customer *next;
 };
@@ -17,7 +16,7 @@ struct pub_node {
     int num_men;
 
     size_t num_bartenders;
-    customer **bartenders;
+    uint64_t *bartenders;
 
     size_t load;
     name pub_name;
