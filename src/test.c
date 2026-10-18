@@ -7,14 +7,17 @@ pub* test_pub();
 student* test_students(FILE *fileptr);
 void print_pub(FILE*, pub*);
 void print_student(FILE*, student*);
-void test_put_students_in_pub(FILE *before, FILE *after, student **students, pub **mypub);
+void test_put_students_in_pub(FILE *before, FILE *after, size_t *num_studs, student **students, pub **mypub);
 
 
 void test(){
 
-    pub* mypub        = test_pub();
+    // pub* mypub        = test_pub();
     // student* students = test_students(stdout);
-    print_pub(stdout, mypub);
+    pub* mypub;
+    student* students;
+    size_t n;
+    test_put_students_in_pub(stdout, stderr, &n, &students, &mypub);
     
     exit(0);
 }

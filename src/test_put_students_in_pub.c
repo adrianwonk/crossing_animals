@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <color_log.h>
 
-void test_put_students_in_pub(FILE *before, FILE *after, student **students, pub **mypub){
+void test_put_students_in_pub(FILE *before, FILE *after, size_t *num_studs, student **students, pub **mypub){
     student *test_students(FILE *fileptr);
     pub *test_pub();
     void add_student_to_pub(student *ps, pub *pub);
@@ -17,6 +17,8 @@ void test_put_students_in_pub(FILE *before, FILE *after, student **students, pub
     fprint_col(before, HEADER, "students and pub entities prior to action");
     for (i=0; (*students)[i].student_id; i++)
         print_student(before, *students + i);
+    *num_studs = i;
+
     print_pub(before, *mypub);
     fprint_col(before, TRAILER, "students and pub entities prior to action");
 
