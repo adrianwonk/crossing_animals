@@ -19,7 +19,7 @@
 #include <string.h>
 #include "pub_data_structures.h"
 #include "student_data_structures.h"
-#include "color_log.h"
+#include <color_log.h>
 
 /* assumed that there is already a pub allocated, with load_size affixed. */
 void init_pub_values(pub *pubptr, size_t num_bartenders, student *bartenders[]){
@@ -93,7 +93,7 @@ void add_student_to_pub(student *ps, pub *pub){
 }
 
 void print_pub(FILE *fileptr, pub *pub){
-    fprint_col(fileptr, HEADER, "pub");
+    fprint_col(fileptr, SUBHEADER, "pub");
     fprint_col(fileptr, DEFAULT, "aggregates: ");
     fprint_col(fileptr, NUMBER, "%d ", pub->num_ladies);
     fprint_col(fileptr, LABEL, "ladies, ");
@@ -137,7 +137,7 @@ void print_pub(FILE *fileptr, pub *pub){
         fprint_col(fileptr, MEMORY, "%p\n",
             (void *)mover->next);
     }
-    fprint_col(fileptr,TRAILER,
+    fprint_col(fileptr,SUBTRAILER,
         "end pub"
     );
 }

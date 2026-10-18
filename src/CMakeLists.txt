@@ -7,7 +7,6 @@ target_sources(${PROJECT_NAME}
     test_pub.c
     test_students.c
     test_put_students_in_pub.c
-    color_log.c
 )
 
 target_include_directories(${PROJECT_NAME}

@@ -1,22 +1,26 @@
 
 #include "student_data_structures.h"
 #include <stdio.h>
+#include <color_log.h>
 void print_student(FILE *fileptr, student *ps){
-    fprintf(fileptr,
-        "===STUDENT==================\n"
-        "student_id:       %zu\n"
-        "student_name:     %s\n"
-        "loneliness_meter: %d\n"
-        "sex_meter:        %d\n"
-        "sex_acc:          %d\n"
-        "sex_requirement:  %d\n"
-        "gender:           %s\n"
-        "sex_preference:   %s\n"
-        "===end=====================\n"
-        , ps->student_id, ps->student_name,
-        ps->loneliness_meter, ps->sex_meter,
-        ps->sex_acc, ps->sex_requirement,
-        (ps->my_gender      == man) ? "man" : "lady",
-        (ps->sex_preference == man) ? "man" : "lady"
-    );
+    fprint_col(fileptr, SUBHEADER, "STUDENT");
+    fprint_col(fileptr, LABEL, "student_id:       ");
+    fprint_col(fileptr, NUMBER, "%zu\n", ps->student_id);
+    fprint_col(fileptr, LABEL, "student_name:     ");
+    fprint_col(fileptr, STRING, "%s\n", ps->student_name);
+    fprint_col(fileptr, LABEL, "loneliness_meter: ");
+    fprint_col(fileptr, NUMBER, "%d\n", ps->loneliness_meter);
+    fprint_col(fileptr, LABEL, "sex_meter:        ");
+    fprint_col(fileptr, NUMBER, "%d\n", ps->sex_meter);
+    fprint_col(fileptr, LABEL, "sex_acc:          ");
+    fprint_col(fileptr, NUMBER, "%d\n", ps->sex_acc);
+    fprint_col(fileptr, LABEL, "sex_requirement:  ");
+    fprint_col(fileptr, NUMBER, "%d\n", ps->sex_requirement);
+    fprint_col(fileptr, LABEL, "gender:           ");
+    fprint_col(fileptr, STRING, "%s\n", 
+        (ps->my_gender      == man) ? "man" : "lady");
+    fprint_col(fileptr, LABEL, "sex_preference:   ");
+    fprint_col(fileptr, STRING, "%s\n", 
+        (ps->my_gender      == man) ? "man" : "lady");
+    fprint_col(fileptr, SUBTRAILER, "student end");
 }

@@ -3,7 +3,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-pub* test_pub(FILE *fileptr){
+pub* test_pub(){
+    void init_pub_values(pub *, size_t, student **);
     student tender7 = {
         .student_id = 6,
         .student_name = "Stacy Wanker V2",
@@ -86,8 +87,6 @@ pub* test_pub(FILE *fileptr){
     pub *my_pub; 
     if ((my_pub = malloc(sizeof (pub))) == NULL){ fprintf(stderr, "failed to malloc pub in test.\n"); exit(1);}
     my_pub->load = 7;
-
-    void init_pub_values(pub *pub, size_t num_bartenders, student *bartenders[]), print_pub(FILE *fileptr, pub *pub);
 
     init_pub_values(my_pub, 7, tenders);
     return my_pub;
