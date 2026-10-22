@@ -5,72 +5,87 @@
 #include "student_data_structures.h"
 #include <color_log.h>
 
-student *studs;
-size_t num_studs;
+typedef struct student_storage student_storage;
+
+struct student_storage{
+    student student;
+    student_storage* next;
+};
+
+#define STORE_SIZE 100
 int main() {
-void test_put_students_in_pub(FILE *before, FILE *after, size_t *num_studs, student **students, pub **mypub);
-    // void test();
-    // test();
+    // TODO:
+    // make a storage for student objects
 
-    /* monitoring helpers */
-    void print_student(FILE*, student*),
-         print_pub(FILE*, pub*);
-    pub *my_pub;
-    FILE *sink, *before, *after;
-    int i;
-
-    /* changes student state! */
-    void tick(pub*);
-
-    /* setup monitoring */
-    sink = fopen("/dev/null", "w");
-    before = stdout;
-    after  = stderr;
-
-    fprint_col(before, HEADER ,"entities before processing");
-    test_put_students_in_pub(before, sink, &num_studs, &studs, &my_pub);
-    fprint_col(before, TRAILER ,"entities before processing");
-
-    tick(my_pub);
-    tick(my_pub);
-    tick(my_pub);
-
-    fprint_col(after, HEADER ,"entities after processing");
-    for(i=0; studs[i].student_id; i++){
-        print_student(after,studs+i);
+    student_storage* store;
+    if(
+    ( store = calloc(STORE_SIZE,sizeof(student_storage)) )
+        == NULL
+    ) {
+        fprintf(stderr, "cannot make student store\n");
+        exit(1);
     }
-    print_pub(after,my_pub);
-    fprint_col(after, TRAILER ,"entities after processing");
+    /* made student store, which stores data as well as next node */
 
-    fclose(sink);
-    return 0;
+
 }
 
-void tick(pub* my_pub){
-    student *stud, *student_from_id(uint64_t id);
-    int i, id;
-    customer *mover;
-    for (i=0; i<my_pub->load; i++){
-        for (mover=my_pub->drunk_bucket[i].next; mover; 
-            mover=mover->next){
-            id = mover->student_id;
-            stud = student_from_id(id);
-            if (!stud) {fprintf(stderr, "no %d\n", id); exit(1);}
-            stud->sex_meter += 1;
+size_t get_key(uint64_t id){
+    return id % STORE_SIZE;
+}
+
+void add_student(student_storage* store, student s){
+    size_t key = get_key(s.student_id);
+    student_storage* bucket = store + key;
+
+    /* get to the last element first! */
+    for(;bucket->next; bucket = bucket->next){ }
+    
+    /* empty bucket has head as last element! */
+    /* in which case, student_id will be 0!   */
+    if (!bucket->student.student_id){
+        bucket->student = s;
+    }
+    else {
+        if /* allocate new memory for conflict! */
+        ( !( bucket->next = calloc(1, sizeof(student_storage)) ) ){
+            fprintf(stderr, "cannot allocate next student storage at key: %zu\n", key);
+            exit(1);
+        }
+        bucket = bucket->next;
+        bucket->student = s;
+    }
+}
+
+
+student *student_from_id(student_storage* store, uint64_t id){
+    size_t key;
+    key = get_key(id);
+
+    student_storage* bucket = store+key;
+    for (; bucket->student.student_id != id || bucket->next; bucket = bucket->next){}
+
+    return (bucket->student.student_id == id) ? (student*)bucket : NULL;
+}
+
+void fprint_store(FILE* fileptr, student_storage* store){
+    void print_student(FILE*,student*);
+    int i;
+    student_storage* runner;
+    for (i=0; i<STORE_SIZE; i++){
+        fprint_col(fileptr, SUBHEADER, "bucket %d", i);
+        for (runner = store+i; runner; runner = runner->next){
+            fprint_col(fileptr, SECTION, "student %zu", runner->student.student_id);
+            print_student(fileptr, (student*)runner);
+            fprint_col(fileptr, LABEL, "next: ");
+            fprint_col(fileptr, MEMORY, "%p\n", runner->next);
         }
     }
 }
 
-student *student_from_id(uint64_t id){
-    int i;
-    for (i=0; i<num_studs; i++){
-        if (studs[i].student_id == id)
-            return studs + i;
-    }
-    return NULL;
-}
 
 
+/** legacy code **/
 /*******************************************/
 /*  Going to the pub increases sex meter   */
 /*  and loneliness meter of students.      */
@@ -80,8 +95,6 @@ student *student_from_id(uint64_t id){
 /*  Bound increase from 0 to 10.           */
 /*                                         */
 /*******************************************/
-
-/** legacy code **/
 // STUDENT* tick(STUDENT* ps, PUB* pb) {
 
 //     int num_women = pb->total_ladies;

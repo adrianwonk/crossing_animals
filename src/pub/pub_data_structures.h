@@ -12,10 +12,12 @@ struct customer_record_node {
 };
 
 struct pub_node {
-    int num_ladies;
-    int num_men;
+    size_t num_ladies;
+    size_t num_men;
 
-    size_t num_bartenders;
+    size_t num_male_bartenders;
+    size_t num_lady_bartenders;
+
     uint64_t *bartenders;
 
     size_t load;

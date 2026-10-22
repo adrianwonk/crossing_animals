@@ -21,6 +21,6 @@ void print_student(FILE *fileptr, student *ps){
         (ps->my_gender      == man) ? "man" : "lady");
     fprint_col(fileptr, LABEL, "sex_preference:   ");
     fprint_col(fileptr, STRING, "%s\n", 
-        (ps->my_gender      == man) ? "man" : "lady");
+        (ps->sex_preference == man) ? "man" : "lady");
     fprint_col(fileptr, SUBTRAILER, "student end");
 }

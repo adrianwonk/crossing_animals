@@ -51,9 +51,7 @@ pub* test_pub(){
     };
     student tender3 = {
         .student_id = 4,
-        .student_name = "Robert",
-        .loneliness_meter = 0,
-        .sex_meter = 0, // bounded from 0 to 30
+        .student_name = "Robert", .loneliness_meter = 0, .sex_meter = 0, // bounded from 0 to 30
         .sex_acc = 0, // possibly increases sex_meter
         .sex_requirement = 3,
 

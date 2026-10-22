@@ -13,6 +13,7 @@
 /***********************************************************************/
 
 #include <stdarg.h>
+#include <stdbool.h>
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -28,6 +29,9 @@ void init_pub_values(pub *pubptr, size_t num_bartenders, const student *bartende
     
     customer *drunk_bucket;
     uint64_t *bartender_ids;
+    size_t num_male_bartenders, num_lady_bartenders;
+    num_male_bartenders=0;
+    num_lady_bartenders=0;
 
     if ((drunk_bucket=calloc( pubptr->load, sizeof(customer) )) == NULL){ /* initialise the drunk_bucket! */
         fprintf(stderr, "critical memory initialisation error while making drunk_bucket!\n");
@@ -41,10 +45,13 @@ void init_pub_values(pub *pubptr, size_t num_bartenders, const student *bartende
     int i;
     for (i=0; i<num_bartenders; i++) {
         bartender_ids[i] = bartenders[i]->student_id;
+        (bartenders[i]->my_gender == man) ?
+            num_male_bartenders++ : num_lady_bartenders++;
     }
 
     /* link created resources */
-    pubptr->num_bartenders = num_bartenders;
+    pubptr->num_male_bartenders = num_male_bartenders;
+    pubptr->num_lady_bartenders = num_lady_bartenders;
     pubptr->bartenders     = bartender_ids;
     pubptr->drunk_bucket   = drunk_bucket;
 
@@ -88,9 +95,11 @@ void print_pub(FILE *fileptr, pub *pub){
     fprint_col(fileptr, NUMBER, "%d ", pub->num_ladies);
     fprint_col(fileptr, LABEL, "ladies, ");
     fprint_col(fileptr, NUMBER, "%d ", pub->num_men);
-    fprint_col(fileptr, LABEL, "men and ");
-    fprint_col(fileptr, NUMBER, "%d ", pub->num_bartenders);
-    fprint_col(fileptr, LABEL, "bartenders\n");
+    fprint_col(fileptr, LABEL, "men, ");
+    fprint_col(fileptr, NUMBER, "%d ", pub->num_male_bartenders);
+    fprint_col(fileptr, LABEL, "male bartenders and \n");
+    fprint_col(fileptr, NUMBER, "%d ", pub->num_lady_bartenders);
+    fprint_col(fileptr, LABEL, "lady bartenders\n");
 
     int i; /* prints out each bucket */
     customer *mover; 
@@ -99,7 +108,7 @@ void print_pub(FILE *fileptr, pub *pub){
         fprint_col(fileptr, SECTION, "bucket %-2d", i);
         for (; mover; mover=mover->next){
             fprint_col(fileptr, LABEL, "address: ");
-            fprint_col(fileptr, MEMORY, "%p",
+            fprint_col(fileptr, MEMORY, "%p ",
                     (void*) mover);
             fprint_col(fileptr, LABEL, "id next_adr: ");
             fprint_col(fileptr, NUMBER, "%zu ", 
@@ -111,11 +120,62 @@ void print_pub(FILE *fileptr, pub *pub){
 
     fprint_col(fileptr, SECTION, "bartenders");
     for (i=0; bartender_id=pub->bartenders[i], 
-    i<pub->num_bartenders; i++){
+    i<(pub->num_lady_bartenders + pub->num_male_bartenders); i++){
         fprint_col(fileptr, LABEL, "id: ");
         fprint_col(fileptr, NUMBER, "%zu\n", bartender_id);
     }
     fprint_col(fileptr,SUBTRAILER,
         "end pub"
     );
+}
+
+void tick(pub* my_pub){
+    void process_student_in_pub(student*, pub*);
+    student *stud, *student_from_id(uint64_t id);
+    int i, id;
+    customer *mover;
+    for (i=0; i<my_pub->load; i++){
+        for (mover=my_pub->drunk_bucket[i].next; mover; 
+            mover=mover->next){
+            id = mover->student_id;
+            stud = student_from_id(id);
+            if (!stud) {fprintf(stderr, "no %d\n", id); exit(1);}
+            process_student_in_pub(stud, my_pub);
+        }
+    }
+}
+
+#define MAX_SEX_INCR 10
+void process_student_in_pub(student* st, pub* pb){
+    int gcd(int, int);
+    int num_women, num_men, sex_meter_incr;
+    num_women = pb->num_ladies + pb->num_lady_bartenders;
+    num_men = pb->num_men + pb->num_male_bartenders;
+    sex_meter_incr = 1;
+
+    if (num_women > 0 && num_men > 0) {
+        int divisor, parts_women, parts_men;
+        divisor = gcd(num_women, num_men);
+        parts_women = num_women / divisor;
+        parts_men = num_men / divisor;
+        if (st->sex_preference == man && parts_men > parts_women) {
+            sex_meter_incr += parts_men - parts_women;
+        }
+        else if (st->sex_preference == lady && parts_women > parts_men) {
+            sex_meter_incr += parts_women - parts_men;
+        }
+
+    } else { // extreme ends case
+        bool prefer_woman_available = 
+            (st->sex_preference == lady && num_women > 0);
+        bool prefer_man_available   =
+            (st->sex_preference == man  && num_men   > 0);
+        sex_meter_incr = (prefer_woman_available || prefer_man_available) ? MAX_SEX_INCR : 0;
+    }
+
+    if (sex_meter_incr > MAX_SEX_INCR) sex_meter_incr = MAX_SEX_INCR;
+    st->sex_acc += sex_meter_incr;
+    if (st->sex_acc >= st->sex_requirement) {
+        st->sex_meter++; st->sex_acc = 0;
+    }
 }
